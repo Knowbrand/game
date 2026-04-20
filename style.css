@@ -1,0 +1,44 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: black;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+}
+
+.container {
+  max-width: 600px;
+}
+
+button {
+  padding: 12px 20px;
+  margin: 10px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.doors {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+}
+
+.door {
+  padding: 40px;
+  background: gray;
+  cursor: pointer;
+}
+
+.disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.active:hover {
+  transform: scale(1.05);
+}
