@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Choice</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: radial-gradient(circle at center, #1a1f1c 0%, #0f1110 70%);
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  color: white;
+}
+
+/* Container */
+.scene {
+  text-align: center;
+}
+
+.title {
+  font-size: 28px;
+  margin-bottom: 50px;
+  opacity: 0.8;
+  letter-spacing: 1px;
+}
+
+/* Doors container */
+.doors {
+  display: flex;
+  gap: 80px;
+  justify-content: center;
+}
+
+/* Individual door */
+.door {
+  width: 170px;
+  height: 320px;
+  background: linear-gradient(145deg, #1e1e1e, #111);
+  border: 3px solid #2d3a33;
+  border-radius: 8px;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.6s ease, box-shadow 0.6s ease;
+  box-shadow: 0 25px 40px rgba(0,0,0,0.6);
+  transform-style: preserve-3d;
+}
+
+/* Inner door panels */
+.door::before {
+  content: "";
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+  border: 2px solid #2f3d35;
+  border-radius: 4px;
+}
+
+/* Handle */
+.handle {
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  width: 12px;
+  height: 40px;
+  background: linear-gradient(#bfa14a, #8e742d);
+  border-radius: 6px;
+  transform: translateY(-50%);
+}
+
+/* Hover open effect */
+.door:hover {
+  transform: perspective(800px) rotateY(-12deg);
+  box-shadow: 0 35px 60px rgba(0,0,0,0.8);
+}
+
+/* Subtle green glow from edges */
+.door:hover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  box-shadow: inset 0 0 20px rgba(111, 143, 114, 0.4);
+}
+
+/* Labels */
+.label {
+  margin-top: 15px;
+  font-size: 15px;
+  opacity: 0.7;
+}
+
+/* Fade transition */
+.fade-out {
+  animation: fadeOut 1s forwards;
+}
+
+@keyframes fadeOut {
+  to { opacity: 0; transform: scale(0.95); }
+}
+</style>
+</head>
+
+<body>
+
+<div class="scene">
+  <div class="title">
+    Two doors.  
+    One decision.
+  </div>
+
+  <div class="doors">
+    <div onclick="chooseDoor('left')" class="door">
+      <div class="handle"></div>
+    </div>
+
+    <div onclick="chooseDoor('right')" class="door">
+      <div class="handle"></div>
+    </div>
+  </div>
+
+  <div class="doors">
+    <div class="label">Unknown Risk</div>
+    <div class="label">Familiar Future</div>
+  </div>
+</div>
+
+<script>
+function chooseDoor(side) {
+
+  document.querySelector('.scene').classList.add('fade-out');
+
+  setTimeout(() => {
+    if (side === "left") {
+      window.location.href = "left.html";
+    } else {
+      window.location.href = "right.html";
+    }
+  }, 900);
+}
+</script>
+
+</body>
+</html>
