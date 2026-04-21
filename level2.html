@@ -4,162 +4,295 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Level 2</title>
-
 <style>
+:root {
+  --bg-1: #eef3ec;
+  --bg-2: #dde8df;
+  --card: #fffefb;
+  --card-border: #bdd0c2;
+  --text: #1f3a2f;
+  --muted: #5d7468;
+  --accent: #315847;
+  --accent-soft: #edf5ef;
+  --feedback-bg: #f4e7dc;
+  --feedback-border: #e5c7ad;
+  --shadow: 0 20px 50px rgba(36, 64, 50, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 body {
-    margin: 0;
-    height: 100vh;
-    background: #f6f1e9;
-    font-family: 'Poppins', sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  color: var(--text);
+  background: linear-gradient(135deg, var(--bg-1), var(--bg-2));
 }
 
-.container {
-    text-align: center;
-    width: 90%;
-    max-width: 600px;
+.card {
+  width: 100%;
+  max-width: 720px;
+  padding: 32px;
+  border-radius: 28px;
+  border: 1px solid var(--card-border);
+  background: var(--card);
+  box-shadow: var(--shadow);
+  text-align: center;
 }
 
-/* Loading */
+.level-tag {
+  display: inline-block;
+  margin-bottom: 20px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .loading {
-    font-size: 1.2rem;
-    color: #1f4d3a;
-    letter-spacing: 2px;
-    animation: pulse 1.5s infinite;
+  padding: 18px 0;
 }
 
-/* Question Section */
-.question-section {
-    display: none;
-    opacity: 0;
-    transition: opacity 0.8s ease;
+.loading-text {
+  margin-bottom: 18px;
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.loading-bar {
+  width: 100%;
+  max-width: 320px;
+  height: 10px;
+  margin: 0 auto;
+  border-radius: 999px;
+  background: #e7efe9;
+  overflow: hidden;
+}
+
+.loading-fill {
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #7ca08d, var(--accent));
+  animation: load 2s ease forwards;
+}
+
+.question-section,
+.exactly-section {
+  display: none;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.question-section.show,
+.exactly-section.show {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .question {
-    font-size: 1.8rem;
-    color: #1f4d3a;
-    margin-bottom: 40px;
+  margin-bottom: 14px;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.1;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.subtext {
+  max-width: 540px;
+  margin: 0 auto 26px;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
 }
 
 button {
-    padding: 12px 30px;
-    margin: 10px;
-    border: 2px solid #1f4d3a;
-    background: transparent;
-    color: #1f4d3a;
-    font-size: 1rem;
-    cursor: pointer;
-    border-radius: 30px;
-    transition: 0.3s ease;
+  min-width: 140px;
+  padding: 14px 26px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--accent);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
 }
 
-button:hover {
-    background: #1f4d3a;
-    color: white;
+button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: var(--accent);
+  color: #fff;
 }
 
-/* Exactly Section */
-.exactly-section {
-    display: none;
-    opacity: 0;
-    transition: opacity 1s ease;
+button:disabled {
+  opacity: 0.75;
+  cursor: default;
+}
+
+.feedback {
+  min-height: 28px;
+  margin-top: 22px;
+}
+
+.feedback-box {
+  display: inline-block;
+  padding: 10px 16px;
+  border: 1px solid var(--feedback-border);
+  border-radius: 999px;
+  background: var(--feedback-bg);
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .line {
-    font-size: 2rem;
-    color: #1f4d3a;
-    margin-bottom: 20px;
+  margin-bottom: 14px;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-family: Georgia, "Times New Roman", serif;
 }
 
 .subline {
-    font-size: 1.2rem;
-    color: #355f4b;
-    margin-bottom: 40px;
-    line-height: 1.6;
+  margin-bottom: 28px;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.7;
 }
 
-/* Animations */
-@keyframes pulse {
-    0% { opacity: 0.3; }
-    50% { opacity: 1; }
-    100% { opacity: 0.3; }
+@keyframes load {
+  from {
+    width: 0;
+  }
+
+  to {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .card {
+    padding: 24px 18px;
+    border-radius: 22px;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  button {
+    width: 100%;
+  }
 }
 </style>
 </head>
-
 <body>
+  <main class="card">
+    <div class="level-tag">Level 2</div>
 
-<div class="container">
-
-    <!-- Loading -->
     <div class="loading" id="loading">
-        Loading next chapter...
+      <div class="loading-text">Loading next chapter...</div>
+      <div class="loading-bar">
+        <div class="loading-fill"></div>
+      </div>
     </div>
 
-    <!-- Question -->
-    <div class="question-section" id="questionSection">
-        <div class="question">
-            Do you control everything in life?
-        </div>
-        <button onclick="yesClicked()">Yes</button>
-        <button onclick="noClicked()">No</button>
-    </div>
+    <section class="question-section" id="questionSection">
+      <h1 class="question">Do you control everything in life?</h1>
+      <p class="subtext">
+        Think for a second before answering. Some things happen because we choose them, and some things happen because they choose us.
+      </p>
 
-    <!-- Exactly -->
-    <div class="exactly-section" id="exactlySection">
-        <div class="line">Exactly.</div>
-        <div class="subline">
-            Some doors choose you.<br>
-            Not the other way around.
-        </div>
-        <button onclick="goNext()">Next →</button>
-    </div>
+      <div class="actions">
+        <button id="yesButton" onclick="yesClicked()">Yes</button>
+        <button id="noButton" onclick="noClicked()">No</button>
+      </div>
 
-</div>
+      <div class="feedback" id="feedback"></div>
+    </section>
+
+    <section class="exactly-section" id="exactlySection">
+      <div class="line">Exactly.</div>
+      <div class="subline">
+        Some doors choose you.<br>
+        Not the other way around.
+      </div>
+      <button onclick="goNext()">Next</button>
+    </section>
+  </main>
 
 <script>
-
-// Small protection: must come from Level 1
 if (sessionStorage.getItem("nameSelected") !== "AK") {
-    window.location.href = "level1.html";
+  window.location.href = "index.html";
 }
 
-// Show question after loading
+const loading = document.getElementById("loading");
+const questionSection = document.getElementById("questionSection");
+const exactlySection = document.getElementById("exactlySection");
+const feedback = document.getElementById("feedback");
+const yesButton = document.getElementById("yesButton");
+const noButton = document.getElementById("noButton");
+
 setTimeout(() => {
-    document.getElementById("loading").style.display = "none";
-    const q = document.getElementById("questionSection");
-    q.style.display = "block";
-    setTimeout(() => {
-        q.style.opacity = "1";
-    }, 50);
+  loading.style.display = "none";
+  questionSection.style.display = "block";
+
+  requestAnimationFrame(() => {
+    questionSection.classList.add("show");
+  });
 }, 2000);
 
+function setFeedback(message) {
+  feedback.innerHTML = message ? `<div class="feedback-box">${message}</div>` : "";
+}
+
 function yesClicked() {
-    alert("Think again.");
+  setFeedback("Think again.");
 }
 
 function noClicked() {
-    const q = document.getElementById("questionSection");
-    q.style.opacity = "0";
+  yesButton.disabled = true;
+  noButton.disabled = true;
+  setFeedback("");
+  questionSection.classList.remove("show");
 
-    setTimeout(() => {
-        q.style.display = "none";
-        const ex = document.getElementById("exactlySection");
-        ex.style.display = "block";
-        setTimeout(() => {
-            ex.style.opacity = "1";
-        }, 50);
-    }, 600);
+  setTimeout(() => {
+    questionSection.style.display = "none";
+    exactlySection.style.display = "block";
+
+    requestAnimationFrame(() => {
+      exactlySection.classList.add("show");
+    });
+  }, 450);
 }
 
 function goNext() {
+  document.body.style.opacity = "0";
+  document.body.style.transition = "opacity 0.5s ease";
+
+  setTimeout(() => {
     window.location.href = "level3.html";
+  }, 550);
 }
-
 </script>
-
 </body>
 </html>
