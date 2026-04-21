@@ -3,113 +3,185 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Level 4 – The Choice</title>
-
+<title>Level 4 - The Choice</title>
 <style>
-body {
-    margin: 0;
-    font-family: 'Georgia', serif;
-    background: linear-gradient(135deg, #f5f1e6, #e8f0e3);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    overflow: hidden;
+:root {
+  --bg-1: #f5f1e6;
+  --bg-2: #e7eee3;
+  --card: #fffdf8;
+  --card-border: #cdd8ca;
+  --text: #2a352f;
+  --muted: #617066;
+  --accent: #315847;
+  --accent-soft: #edf4ef;
+  --shadow: 0 22px 55px rgba(43, 68, 55, 0.12);
 }
 
-.container {
-    text-align: center;
-    max-width: 750px;
-    padding: 60px;
-    background: rgba(255,255,255,0.7);
-    backdrop-filter: blur(8px);
-    border-radius: 20px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.08);
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeIn 1.5s ease forwards;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  color: var(--text);
+  background: linear-gradient(135deg, var(--bg-1), var(--bg-2));
+}
+
+.card {
+  width: 100%;
+  max-width: 760px;
+  padding: 34px;
+  border: 1px solid var(--card-border);
+  border-radius: 28px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+.level-tag {
+  display: inline-block;
+  margin-bottom: 20px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 h1 {
-    font-size: 32px;
-    margin-bottom: 30px;
-    color: #2f5d3a;
-    letter-spacing: 1px;
+  margin-bottom: 18px;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.1;
+  font-family: Georgia, "Times New Roman", serif;
 }
 
-p {
-    font-size: 18px;
-    line-height: 1.8;
-    color: #444;
-    margin-bottom: 20px;
+.intro {
+  max-width: 560px;
+  margin: 0 auto 26px;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.copy-block {
+  padding: 22px;
+  border: 1px solid #dde7dd;
+  border-radius: 22px;
+  background: #fbfdf9;
+}
+
+.copy-block p {
+  font-size: 17px;
+  line-height: 1.8;
+  color: var(--text);
+}
+
+.copy-block p + p {
+  margin-top: 18px;
 }
 
 .highlight {
-    color: #2f5d3a;
-    font-weight: bold;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.actions {
+  margin-top: 28px;
 }
 
 button {
-    margin-top: 30px;
-    padding: 12px 30px;
-    font-size: 16px;
-    border: none;
-    background-color: #2f5d3a;
-    color: white;
-    border-radius: 30px;
-    cursor: pointer;
-    transition: 0.3s ease;
+  padding: 14px 28px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
 }
 
 button:hover {
-    background-color: #244a2f;
-    transform: scale(1.05);
+  transform: translateY(-2px);
+  background: #254636;
 }
 
-@keyframes fadeIn {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+@media (max-width: 640px) {
+  .card {
+    padding: 24px 18px;
+    border-radius: 22px;
+  }
+
+  .copy-block {
+    padding: 18px;
+  }
+
+  button {
+    width: 100%;
+  }
 }
 </style>
 </head>
-
 <body>
-
-<div class="container">
+  <main class="card">
+    <div class="level-tag">Level 4</div>
     <h1>Before You Choose</h1>
+    <p class="intro">
+      This is the pause before the decision. Read it once, then trust your instinct.
+    </p>
 
-    <p>
+    <div class="copy-block">
+      <p>
         Ahead of you are <span class="highlight">two doors</span>.
-    </p>
+      </p>
 
-    <p>
-        One represents stability.  
-        A life you manage.  
+      <p>
+        One represents stability.
+        <br>
+        A life you manage.
+        <br>
         A future you understand.
-    </p>
+      </p>
 
-    <p>
-        The other represents risk.  
-        Uncertainty.  
+      <p>
+        The other represents risk.
+        <br>
+        Uncertainty.
+        <br>
         A leap that could change everything.
-    </p>
+      </p>
 
-    <p>
+      <p>
         There is no right answer.
         <br>
         Only the answer that feels right to you.
-    </p>
+      </p>
+    </div>
 
-    <button onclick="goNext()">Continue</button>
-</div>
+    <div class="actions">
+      <button onclick="goNext()">Continue</button>
+    </div>
+  </main>
 
 <script>
 function goNext() {
-    window.location.href = "doors.html";
+  document.body.style.opacity = "0";
+  document.body.style.transition = "opacity 0.5s ease";
+
+  setTimeout(() => {
+    window.location.href = "instructions.html";
+  }, 550);
 }
 </script>
-
 </body>
 </html>
