@@ -82,6 +82,7 @@ body {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
+  position: relative;
 }
 
 .option {
@@ -93,7 +94,9 @@ body {
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  position: relative;
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  will-change: transform;
 }
 
 .option:hover:not(:disabled) {
@@ -116,6 +119,14 @@ body {
   background: var(--wrong-bg);
   border-color: var(--wrong-border);
   color: var(--wrong-text);
+}
+
+.option.is-shifty {
+  z-index: 2;
+}
+
+.option.pop {
+  box-shadow: 0 14px 24px rgba(127, 106, 100, 0.16);
 }
 
 .feedback {
@@ -155,10 +166,10 @@ body {
     </p>
 
     <div class="options">
-      <button class="option" onclick="checkAnswer(this, false)">1. akansha</button>
-      <button class="option" onclick="checkAnswer(this, false)">2. aakanshaa</button>
-      <button class="option" onclick="checkAnswer(this, false)">3. aakansha</button>
-      <button class="option" onclick="checkAnswer(this, true)">4. AK</button>
+      <button class="option is-shifty" data-correct="false">1. akansha</button>
+      <button class="option is-shifty" data-correct="false">2. aakanshaa</button>
+      <button class="option is-shifty" data-correct="false">3. aakansha</button>
+      <button class="option" data-correct="true">4. AK</button>
     </div>
 
     <div class="feedback" id="feedback"></div>
@@ -166,6 +177,85 @@ body {
   </main>
 
 <script>
+const optionsWrap = document.querySelector(".options");
+const buttons = document.querySelectorAll(".option");
+const shiftyButtons = document.querySelectorAll('.option[data-correct="false"]');
+const prefersTouch = window.matchMedia("(pointer: coarse)").matches;
+
+buttons.forEach((button) => {
+  button.addEventListener("click", (event) => {
+    const isCorrect = button.dataset.correct === "true";
+
+    if (!isCorrect && prefersTouch) {
+      event.preventDefault();
+      jumpButton(button);
+      return;
+    }
+
+    checkAnswer(button, isCorrect);
+  });
+});
+
+function resetShiftyButtons() {
+  shiftyButtons.forEach((button) => {
+    if (!button.disabled) {
+      button.style.transform = "";
+    }
+  });
+}
+
+function pushButtonsAway(event) {
+  if (prefersTouch) {
+    return;
+  }
+
+  const pointerX = event.clientX;
+  const pointerY = event.clientY;
+
+  shiftyButtons.forEach((button) => {
+    if (button.disabled) {
+      return;
+    }
+
+    const rect = button.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const deltaX = centerX - pointerX;
+    const deltaY = centerY - pointerY;
+    const distance = Math.hypot(deltaX, deltaY);
+    const threshold = 140;
+
+    if (distance < threshold) {
+      const force = (threshold - distance) / threshold;
+      const moveX = (deltaX / Math.max(distance, 1)) * force * 30;
+      const moveY = (deltaY / Math.max(distance, 1)) * force * 20;
+      button.style.transform = `translate(${moveX}px, ${moveY}px) rotate(${moveX * 0.08}deg)`;
+    } else {
+      button.style.transform = "";
+    }
+  });
+}
+
+function jumpButton(button) {
+  const x = (Math.random() - 0.5) * 70;
+  const y = (Math.random() - 0.5) * 55;
+  const rotate = (Math.random() - 0.5) * 16;
+  button.classList.remove("pop");
+  void button.offsetWidth;
+  button.classList.add("pop");
+  button.style.transform = `translate(${x}px, ${y}px) scale(1.06) rotate(${rotate}deg)`;
+
+  setTimeout(() => {
+    button.classList.remove("pop");
+    if (!button.disabled) {
+      button.style.transform = "";
+    }
+  }, 450);
+}
+
+optionsWrap.addEventListener("mousemove", pushButtonsAway);
+optionsWrap.addEventListener("mouseleave", resetShiftyButtons);
+
 function checkAnswer(button, isCorrect) {
   const buttons = document.querySelectorAll(".option");
   const feedback = document.getElementById("feedback");
@@ -196,6 +286,7 @@ function checkAnswer(button, isCorrect) {
         btn.disabled = false;
         btn.classList.remove("wrong");
       });
+      resetShiftyButtons();
       feedback.textContent = "";
     }, 1100);
   }
