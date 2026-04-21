@@ -1,89 +1,131 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Right Door</title>
-
 <style>
-body{
-  margin:0;
-  font-family:'Segoe UI',sans-serif;
-  background: linear-gradient(135deg,#f5f1ea,#ffffff);
-  height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  text-align:center;
+:root {
+  --bg-1: #f6f1e8;
+  --bg-2: #ffffff;
+  --card: #fffdf9;
+  --card-border: #d8ccc0;
+  --text: #2f2523;
+  --muted: #6f625d;
+  --accent: #6f8f72;
+  --accent-dark: #58705a;
+  --shadow: 0 22px 55px rgba(82, 62, 49, 0.12);
 }
 
-.card{
-  max-width:700px;
-  padding:60px 40px;
-  border:2px solid #6f8f72;
-  border-radius:20px;
-  background:white;
-  box-shadow:0 25px 60px rgba(0,0,0,0.1);
-  animation:fadeIn 1.2s ease forwards;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-h1{
-  font-size:30px;
-  margin-bottom:30px;
-  color:#2e2e2e;
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  color: var(--text);
+  background: linear-gradient(135deg, var(--bg-1), var(--bg-2));
 }
 
-p{
-  font-size:18px;
-  line-height:1.7;
-  color:#444;
+.card {
+  width: 100%;
+  max-width: 760px;
+  padding: 34px;
+  border: 1px solid var(--card-border);
+  border-radius: 28px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  text-align: center;
 }
 
-button{
-  margin-top:40px;
-  padding:14px 28px;
-  border-radius:30px;
-  border:none;
-  background:#6f8f72;
-  color:white;
-  font-size:15px;
-  cursor:pointer;
-  transition:0.3s;
+.level-tag {
+  display: inline-block;
+  margin-bottom: 20px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: #eef3ee;
+  color: var(--accent-dark);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-button:hover{
-  background:#5e7a62;
-  transform:translateY(-3px);
+h1 {
+  margin-bottom: 20px;
+  font-size: clamp(2rem, 4vw, 2.9rem);
+  line-height: 1.1;
+  font-family: Georgia, "Times New Roman", serif;
 }
 
-@keyframes fadeIn{
-  from{opacity:0; transform:translateY(20px);}
-  to{opacity:1; transform:translateY(0);}
+.copy {
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.8;
+}
+
+.actions {
+  margin-top: 28px;
+}
+
+button {
+  padding: 14px 28px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  background: var(--accent-dark);
+}
+
+@media (max-width: 640px) {
+  .card {
+    padding: 24px 18px;
+    border-radius: 22px;
+  }
+
+  button {
+    width: 100%;
+  }
 }
 </style>
 </head>
-
 <body>
+  <main class="card">
+    <div class="level-tag">Right Door</div>
+    <h1>You chose stability.</h1>
 
-<div class="card">
-  <h1>You chose stability.</h1>
+    <p class="copy">
+      A life you are already managing.
+      <br><br>
+      Not perfect.
+      <br>
+      Not dramatic.
+      <br><br>
+      But peaceful.
+      <br><br>
+      And sometimes...
+      <br>
+      peace is the greatest victory.
+    </p>
 
-  <p>
-    A life you're already managing.<br><br>
-
-    Not perfect.<br>
-    Not dramatic.<br><br>
-
-    But peaceful.<br><br>
-
-    And sometimes…<br>
-    peace is the greatest victory.
-  </p>
-
-  <button onclick="window.location.href='final.html'">
-    Continue
-  </button>
-</div>
-
+    <div class="actions">
+      <button onclick="window.location.href='final.html'">Continue</button>
+    </div>
+  </main>
 </body>
 </html>
