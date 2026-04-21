@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Keep Moving</title>
+  <style>
+    :root {
+      --bg-1: #081120;
+      --bg-2: #15356a;
+      --bg-3: #040915;
+      --bg-4: #08101c;
+      --accent: #76e4ff;
+      --accent-strong: #b8f2ff;
+      --accent-soft: rgba(118, 228, 255, 0.24);
+      --accent-fog: rgba(118, 228, 255, 0.1);
+      --text: #f8fbff;
+      --muted: rgba(248, 251, 255, 0.72);
+      --faint: rgba(248, 251, 255, 0.38);
+      --panel: rgba(8, 14, 28, 0.38);
+      --panel-strong: rgba(7, 13, 25, 0.68);
+      --border: rgba(255, 255, 255, 0.12);
+      --shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+      --glow: 0 0 36px rgba(118, 228, 255, 0.24);
+      --glow-strong: 0 0 60px rgba(118, 228, 255, 0.36);
+      --font-display: "Georgia", "Times New Roman", serif;
+      --font-body: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background: #020611;
+      color: var(--text);
+      font-family: var(--font-body);
+      overflow: hidden;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.08), transparent 34%),
+        radial-gradient(circle at 10% 20%, var(--accent-fog), transparent 24%),
+        linear-gradient(145deg, var(--bg-1), var(--bg-2), var(--bg-3), var(--bg-4));
+      background-size: 100% 100%, 100% 100%, 240% 240%;
+      animation: ambientShift 22s ease-in-out infinite;
+    }
+
+    .background-wash,
+    .particle-layer,
+    .orbital-layer,
+    .vignette {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .background-wash {
+      background:
+        radial-gradient(circle at 18% 18%, var(--accent-soft), transparent 24%),
+        radial-gradient(circle at 82% 24%, rgba(255, 255, 255, 0.07), transparent 18%),
+        radial-gradient(circle at 50% 82%, rgba(255, 255, 255, 0.05), transparent 30%);
+      mix-blend-mode: screen;
+      animation: washPulse 12s ease-in-out infinite;
+    }
+
+    .orbital-layer {
+      overflow: hidden;
+    }
+
+    .orb {
+      position: absolute;
+      width: 38vw;
+      height: 38vw;
+      max-width: 520px;
+      max-height: 520px;
+      min-width: 240px;
+      min-height: 240px;
+      border-radius: 50%;
+      filter: blur(24px);
+      opacity: 0.2;
+      background: radial-gradient(circle, var(--accent-soft), transparent 64%);
+      animation: driftOrb 18s ease-in-out infinite;
+    }
+
+    .orb.orb-a {
+      top: -8%;
+      left: -12%;
+    }
+
+    .orb.orb-b {
+      bottom: -14%;
+      right: -10%;
+      animation-duration: 24s;
+      animation-delay: -7s;
+    }
+
+    .particle-layer {
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.44);
+      box-shadow: 0 0 14px rgba(255, 255, 255, 0.16);
+      opacity: 0.28;
+      animation: floatParticle linear infinite;
+    }
+
+    .vignette {
+      background:
+        radial-gradient(circle, transparent 40%, rgba(0, 0, 0, 0.48) 100%),
+        linear-gradient(180deg, rgba(0, 0, 0, 0.12), transparent 20%, transparent 80%, rgba(0, 0, 0, 0.22));
+    }
+
+    .app {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      isolation: isolate;
+    }
+
+    .hud {
+      position: fixed;
+      top: 18px;
+      left: 18px;
+      right: 18px;
+      z-index: 4;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      pointer-events: none;
+    }
+
+    .hud-pill,
+    .progress-shell {
+      pointer-events: auto;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(6, 10, 22, 0.3);
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow);
+    }
+
+    .hud-pill {
+      padding: 12px 16px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .progress-shell {
+      width: min(280px, 48vw);
+      padding: 8px;
+      border-radius: 999px;
+    }
+
+    .progress-track {
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      width: 20%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.34), var(--accent), var(--accent-strong));
+      box-shadow: var(--glow);
+      transform-origin: left center;
+      transition: width 0.8s ease;
+    }
+
+    .stage {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 26px;
+      opacity: 0;
+      visibility: hidden;
+      transform: scale(1.02);
+      transition:
+        opacity 1.15s ease,
+        transform 1.15s ease,
+        visibility 1.15s step-end;
+    }
+
+    .stage.active {
+      opacity: 1;
+      visibility: visible;
+      transform: scale(1);
+      transition:
+        opacity 1.15s ease,
+        transform 1.15s ease,
+        visibility 0s;
+    }
+
+    .panel {
+      position: relative;
+      width: min(980px, 100%);
+      padding: clamp(28px, 4vw, 52px);
+      border-radius: 32px;
+      border: 1px solid var(--border);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 24%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.03), var(--panel));
+      backdrop-filter: blur(22px);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .panel::before,
+    .panel::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .panel::before {
+      background: linear-gradient(120deg, transparent 18%, rgba(255, 255, 255, 0.08), transparent 84%);
+      transform: translateX(-120%);
+      animation: sheen 9s ease-in-out infinite;
+    }
+
+    .panel::after {
+      background:
+        radial-gradient(circle at 20% 10%, rgba(255, 255, 255, 0.08), transparent 20%),
+        radial-gradient(circle at 90% 90%, var(--accent-fog), transparent 24%);
+      opacity: 0.9;
+    }
+
+    .panel-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 42px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    }
+
+    h1,
+    h2,
+    .cinematic-line {
+      margin: 0;
+      font-family: var(--font-display);
+      font-weight: 400;
+      line-height: 1.05;
+      letter-spacing: 0.01em;
+    }
+
+    h1 {
+      max-width: 10ch;
+      font-size: clamp(2.8rem, 8vw, 6rem);
+    }
+
+    h2 {
+      font-size: clamp(2.15rem, 6vw, 4.2rem);
+      margin-bottom: 18px;
+    }
+
+    p,
+    input,
+    button,
+    label,
+    span {
+      font-family: var(--font-body);
+    }
+
+    .lede,
+    .helper-text {
+      max-width: 60ch;
+      color: var(--muted);
+      font-size: clamp(1rem, 2vw, 1.08rem);
+      line-height: 1.75;
+    }
+
+    .hero-grid,
+    .theme-grid,
+    .button-row,
+    .insight-grid,
+    .door-grid,
+    .final-grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .hero-grid {
+      grid-template-columns: minmax(0, 1.3fr) minmax(300px, 0.9fr);
+      align-items: center;
+      gap: 30px;
+    }
+
+    .intro-aside {
+      padding: 22px;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(4, 8, 18, 0.28));
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .intro-motto {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .motto-line {
+      color: var(--faint);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+    }
+
+    .theme-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: 30px;
+    }
+
+    .theme-card,
+    .choice-button,
+    .door,
+    .restart-button {
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      transition:
+        transform 0.35s ease,
+        box-shadow 0.35s ease,
+        border-color 0.35s ease,
+        background 0.35s ease,
+        opacity 0.35s ease,
+        filter 0.35s ease;
+    }
+
+    .theme-card {
+      position: relative;
+      min-height: 220px;
+      padding: 20px;
+      border-radius: 28px;
+      background: var(--preview);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 18px 42px rgba(0, 0, 0, 0.32);
+      overflow: hidden;
+      text-align: left;
+    }
+
+    .theme-card::before,
+    .theme-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .theme-card::before {
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.3), transparent 18%),
+        linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.34));
+    }
+
+    .theme-card::after {
+      inset: auto -10% -40% -10%;
+      height: 55%;
+      background: radial-gradient(circle at center, rgba(255, 255, 255, 0.14), transparent 56%);
+      filter: blur(24px);
+    }
+
+    .theme-card:hover,
+    .theme-card:focus-visible,
+    .choice-button:hover,
+    .choice-button:focus-visible,
+    .door:not(.disabled):hover,
+    .door:not(.disabled):focus-visible,
+    .restart-button:hover,
+    .restart-button:focus-visible {
+      transform: translateY(-6px) scale(1.01);
+      box-shadow: 0 0 26px rgba(255, 255, 255, 0.1), var(--glow-strong);
+      border-color: rgba(255, 255, 255, 0.28);
+      outline: none;
+    }
+
+    .theme-card.selected {
+      border-color: rgba(255, 255, 255, 0.36);
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), var(--glow-strong);
+    }
+
+    .theme-label,
+    .theme-description {
+      position: relative;
+      z-index: 1;
+      display: block;
+    }
+
+    .theme-label {
+      margin-bottom: 10px;
+      font-size: 1.02rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .theme-description {
+      max-width: 20ch;
+      color: rgba(255, 255, 255, 0.78);
+      line-height: 1.55;
+      font-size: 0.94rem;
+    }
+
+    .button-row {
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      margin-top: 30px;
+    }
+
+    .choice-button,
+    .restart-button {
+      min-height: 60px;
+      padding: 14px 22px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text);
+      letter-spacing: 0.06em;
+      font-size: 1rem;
+      backdrop-filter: blur(12px);
+    }
+
+    .choice-button.subtle {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .insight-grid {
+      grid-template-columns: 1.15fr 0.85fr;
+      align-items: start;
+      margin-top: 26px;
+    }
+
+    .reveals,
+    .message-block,
+    .final-stack,
+    .final-core {
+      display: grid;
+      gap: 14px;
+    }
+
+    .reveals {
+      min-height: 176px;
+      align-content: center;
+    }
+
+    .cinematic-line {
+      opacity: 0;
+      transform: translateY(24px);
+      filter: blur(8px);
+      font-size: clamp(1.7rem, 4.5vw, 3rem);
+      text-shadow: 0 0 30px rgba(255, 255, 255, 0.08);
+    }
+
+    .cinematic-line.visible,
+    .message-line.visible {
+      animation: lineReveal 1.3s ease forwards;
+    }
+
+    .quiet-card,
+    .mirror-card,
+    .status-card,
+    .door-meta {
+      padding: 20px;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(5, 9, 19, 0.26));
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
+
+    .quiet-card-title,
+    .status-title,
+    .door-meta-label {
+      margin-bottom: 10px;
+      color: var(--faint);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-size: 0.76rem;
+    }
+
+    .quiet-card p,
+    .status-copy,
+    .door-meta-copy {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 0.96rem;
+    }
+
+    .shadow-layout {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 26px;
+      align-items: center;
+      margin-top: 26px;
+    }
+
+    .shadow-form {
+      display: grid;
+      gap: 16px;
+      max-width: 420px;
+    }
+
+    .shadow-input {
+      width: 100%;
+      min-height: 60px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(4, 10, 24, 0.5);
+      color: var(--text);
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    }
+
+    .shadow-input:focus {
+      border-color: rgba(255, 255, 255, 0.28);
+      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05), var(--glow);
+      transform: translateY(-2px);
+    }
+
+    .shadow-note {
+      color: var(--faint);
+      font-size: 0.9rem;
+    }
+
+    .mirror-card {
+      position: relative;
+      min-height: 320px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+
+    .mirror-card::before {
+      content: "";
+      position: absolute;
+      inset: 16px;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background:
+        radial-gradient(circle at center, rgba(255, 255, 255, 0.08), transparent 60%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 40%);
+      box-shadow: inset 0 0 34px rgba(255, 255, 255, 0.06), 0 0 32px var(--accent-soft);
+    }
+
+    .mirror-silhouette {
+      position: absolute;
+      width: 56%;
+      height: 74%;
+      border-radius: 46% 46% 42% 42% / 32% 32% 58% 58%;
+      background:
+        radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.18), transparent 16%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.02) 24%, rgba(0, 0, 0, 0.26) 100%);
+      box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.1), 0 0 40px rgba(0, 0, 0, 0.18);
+      filter: blur(1px);
+      opacity: 0.8;
+    }
+
+    .mirror-word {
+      position: relative;
+      z-index: 1;
+      max-width: 82%;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(18px) scale(0.96);
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 6vw, 4.4rem);
+      letter-spacing: 0.04em;
+      color: rgba(255, 255, 255, 0.96);
+      text-shadow: 0 0 18px rgba(255, 255, 255, 0.08), 0 0 32px var(--accent-soft);
+      transition: opacity 1.1s ease, transform 1.1s ease;
+    }
+
+    .mirror-word.visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .message-block {
+      min-height: 96px;
+      align-content: center;
+      margin-top: 18px;
+    }
+
+    .message-line {
+      opacity: 0;
+      transform: translateY(16px);
+      font-size: clamp(1.1rem, 3vw, 1.6rem);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .quote-word {
+      color: rgba(255, 255, 255, 0.96);
+      text-shadow: 0 0 16px rgba(255, 255, 255, 0.12), 0 0 24px var(--accent-soft);
+      font-style: italic;
+    }
+
+    .door-room {
+      display: grid;
+      gap: 24px;
+      margin-top: 28px;
+    }
+
+    .door-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px;
+      perspective: 1400px;
+    }
+
+    .door {
+      position: relative;
+      min-height: 320px;
+      border-radius: 30px;
+      padding: 22px;
+      display: flex;
+      align-items: end;
+      overflow: hidden;
+      transform-style: preserve-3d;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.03)),
+        linear-gradient(160deg, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.46));
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 26px 54px rgba(0, 0, 0, 0.35);
+    }
+
+    .door::before,
+    .door::after {
+      content: "";
+      position: absolute;
+      border-radius: inherit;
+    }
+
+    .door::before {
+      inset: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 36%),
+        radial-gradient(circle at center, rgba(255, 255, 255, 0.08), transparent 60%);
+      box-shadow:
+        inset 0 0 24px rgba(255, 255, 255, 0.06),
+        0 0 28px rgba(255, 255, 255, 0.04);
+      transform: translateZ(30px);
+    }
+
+    .door::after {
+      width: 12px;
+      height: 12px;
+      top: 50%;
+      right: 34px;
+      margin-top: -6px;
+      border-radius: 50%;
+      background: rgba(255, 245, 186, 0.94);
+      box-shadow: 0 0 18px rgba(255, 245, 186, 0.72);
+      transform: translateZ(46px);
+    }
+
+    .door-beam {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.02) 45%, rgba(255, 255, 255, 0.14) 50%, rgba(255, 255, 255, 0.02) 55%, transparent 100%);
+      opacity: 0.65;
+      transform: translateX(-60%);
+      animation: beamSlide 6s ease-in-out infinite;
+    }
+
+    .door.beat {
+      animation: doorBeat 1.8s ease-in-out infinite;
+    }
+
+    .door.disabled {
+      opacity: 0.36;
+      cursor: not-allowed;
+      filter: grayscale(0.15);
+    }
+
+    .door.locked .door-label::after {
+      content: " Locked";
+      color: rgba(255, 255, 255, 0.42);
+    }
+
+    .door.opening {
+      animation: doorOpen 1.45s cubic-bezier(0.25, 0.8, 0.2, 1) forwards;
+    }
+
+    .door-label {
+      position: relative;
+      z-index: 1;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .door-stage-footer {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .door-meta {
+      min-height: 92px;
+      display: grid;
+      align-content: center;
+    }
+
+    .door-choices {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.76rem;
+    }
+
+    .choice-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.18);
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.1);
+    }
+
+    .choice-dot.active {
+      background: var(--accent);
+      box-shadow: var(--glow);
+    }
+
+    .center-panel {
+      text-align: center;
+    }
+
+    .final-grid {
+      grid-template-columns: 1fr;
+      margin-top: 26px;
+    }
+
+    .final-stack {
+      justify-items: center;
+    }
+
+    .final-core {
+      margin-top: 24px;
+      padding-top: 28px;
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      justify-items: center;
+    }
+
+    .constellation {
+      position: relative;
+      width: min(500px, 100%);
+      height: 180px;
+      margin: 8px auto 18px;
+      opacity: 0.8;
+    }
+
+    .constellation::before {
+      content: "";
+      position: absolute;
+      left: 12%;
+      right: 12%;
+      top: 50%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent);
+      transform: translateY(-50%);
+    }
+
+    .star {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: 0 0 18px rgba(255, 255, 255, 0.3), 0 0 26px var(--accent-soft);
+      animation: twinkle 3.2s ease-in-out infinite;
+    }
+
+    .star.s1 { top: 54%; left: 14%; }
+    .star.s2 { top: 34%; left: 33%; animation-delay: -0.6s; }
+    .star.s3 { top: 60%; left: 50%; animation-delay: -1.4s; }
+    .star.s4 { top: 26%; left: 68%; animation-delay: -0.9s; }
+    .star.s5 { top: 50%; right: 14%; animation-delay: -1.8s; }
+
+    .restart-wrap {
+      margin-top: 34px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @keyframes ambientShift {
+      0%, 100% { background-position: center, center, 0% 50%; }
+      50% { background-position: center, center, 100% 50%; }
+    }
+
+    @keyframes washPulse {
+      0%, 100% { opacity: 0.74; transform: scale(1); }
+      50% { opacity: 0.98; transform: scale(1.04); }
+    }
+
+    @keyframes driftOrb {
+      0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+      50% { transform: translate3d(20px, 16px, 0) scale(1.08); }
+    }
+
+    @keyframes floatParticle {
+      from {
+        transform: translate3d(0, 112vh, 0) scale(0.72);
+        opacity: 0;
+      }
+      15% {
+        opacity: 0.32;
+      }
+      to {
+        transform: translate3d(var(--drift, 0px), -15vh, 0) scale(1.22);
+        opacity: 0;
+      }
+    }
+
+    @keyframes lineReveal {
+      0% {
+        opacity: 0;
+        transform: translateY(24px);
+        filter: blur(8px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+      }
+    }
+
+    @keyframes sheen {
+      0%, 100% { transform: translateX(-120%); }
+      46%, 56% { transform: translateX(120%); }
+    }
+
+    @keyframes beamSlide {
+      0%, 100% { transform: translateX(-60%); opacity: 0.35; }
+      50% { transform: translateX(60%); opacity: 0.72; }
+    }
+
+    @keyframes doorBeat {
+      0%, 100% { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 26px 54px rgba(0, 0, 0, 0.35); }
+      50% { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12), 0 0 40px rgba(255, 255, 255, 0.09), var(--glow); }
+    }
+
+    @keyframes doorOpen {
+      0% {
+        transform: rotateY(0deg) translateY(0) scale(1);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 26px 54px rgba(0, 0, 0, 0.35);
+      }
+      60% {
+        transform: rotateY(-38deg) translateY(-8px) scale(1.01);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16), 0 0 40px rgba(255, 255, 255, 0.14), var(--glow);
+      }
+      100% {
+        transform: rotateY(-76deg) translateX(-26px) scale(0.98);
+        opacity: 0.66;
+      }
+    }
+
+    @keyframes twinkle {
+      0%, 100% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.35); opacity: 1; }
+    }
+
+    @media (max-width: 900px) {
+      .hero-grid,
+      .insight-grid,
+      .shadow-layout,
+      .door-stage-footer {
+        grid-template-columns: 1fr;
+      }
+
+      .progress-shell {
+        width: min(220px, 40vw);
+      }
+    }
+
+    @media (max-width: 760px) {
+      body {
+        overflow: auto;
+      }
+
+      .app {
+        min-height: 100vh;
+        height: 100vh;
+      }
+
+      .theme-grid,
+      .door-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hud {
+        top: 14px;
+        left: 14px;
+        right: 14px;
+        gap: 10px;
+      }
+
+      .hud-pill {
+        font-size: 0.68rem;
+        letter-spacing: 0.14em;
+        padding: 10px 12px;
+      }
+
+      .progress-shell {
+        width: min(140px, 34vw);
+      }
+
+      .panel {
+        padding: 24px;
+        border-radius: 26px;
+      }
+
+      .theme-card {
+        min-height: 180px;
+      }
+
+      .mirror-card,
+      .door {
+        min-height: 240px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="background-wash" aria-hidden="true"></div>
+  <div class="orbital-layer" aria-hidden="true">
+    <div class="orb orb-a"></div>
+    <div class="orb orb-b"></div>
+  </div>
+  <div class="particle-layer" id="particleLayer" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+
+  <div class="hud" aria-hidden="true">
+    <div class="hud-pill" id="hudLabel">Prelude</div>
+    <div class="progress-shell">
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+  </div>
+
+  <main class="app" id="app">
+    <section class="stage active" id="stage-intro" aria-labelledby="intro-title">
+      <div class="panel">
+        <div class="panel-inner">
+          <div class="hero-grid">
+            <div>
+              <span class="eyebrow">A Quiet Beginning</span>
+              <h1 id="intro-title">Choose the color of your inner weather.</h1>
+              <p class="lede">
+                This is not about picking a skin. It is about deciding how the world feels while you move through it.
+                Start by choosing the emotional light you want to carry.
+              </p>
+            </div>
+
+            <aside class="intro-aside">
+              <div class="quiet-card-title">Before the first step</div>
+              <p>
+                The game remembers one hidden word, bends perception around it, and quietly gives it back with less fear attached.
+              </p>
+              <div class="intro-motto">
+                <span class="motto-line">Expect the unexpected.</span>
+                <span class="motto-line">Accept the unexpected.</span>
+                <span class="motto-line">Just start.</span>
+              </div>
+            </aside>
+          </div>
+
+          <div class="theme-grid" id="themeGrid">
+            <button
+              class="theme-card"
+              type="button"
+              data-theme="dawn"
+              style="--preview: linear-gradient(145deg, #2d1220, #b45309 48%, #fde68a 100%);"
+            >
+              <span class="theme-label">Dawn Pulse</span>
+              <span class="theme-description">Warm, fragile, brave. The feeling of light returning before certainty does.</span>
+            </button>
+
+            <button
+              class="theme-card"
+              type="button"
+              data-theme="ocean"
+              style="--preview: linear-gradient(145deg, #07111f, #1d4ed8 52%, #67e8f9 100%);"
+            >
+              <span class="theme-label">Midnight Tide</span>
+              <span class="theme-description">Cool, deep, reflective. A still surface hiding quiet momentum underneath.</span>
+            </button>
+
+            <button
+              class="theme-card"
+              type="button"
+              data-theme="violet"
+              style="--preview: linear-gradient(145deg, #120d1f, #6d28d9 48%, #f472b6 100%);"
+            >
+              <span class="theme-label">Velvet Static</span>
+              <span class="theme-description">Mysterious, intimate, electric. The comfort of darkness that still glows back.</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="stage" id="stage-mindset" aria-labelledby="mindset-title">
+      <div class="panel">
+        <div class="panel-inner">
+          <span class="eyebrow">Mindset</span>
+          <h2 id="mindset-title">Do you control everything in life?</h2>
+          <p class="helper-text">
+            Some answers keep you circling. One answer lets the next room appear.
+          </p>
+
+          <div class="insight-grid">
+            <div>
+              <div class="button-row">
+                <button class="choice-button subtle" type="button" disabled aria-disabled="true">Yes</button>
+                <button class="choice-button" type="button" id="mindsetNo">No</button>
+              </div>
+
+              <div class="reveals" id="mindsetReveal">
+                <p class="cinematic-line" id="expectLine">Expect the unexpected.</p>
+                <p class="cinematic-line" id="acceptLine">Accept the unexpected.</p>
+              </div>
+            </div>
+
+            <aside class="status-card">
+              <div class="status-title">Observation</div>
+              <p class="status-copy">
+                Control can be comforting, but it is often a story we tell ourselves to avoid movement.
+                The unknown is not always danger. Sometimes it is just reality without decoration.
+              </p>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="stage" id="stage-shadow" aria-labelledby="shadow-title">
+      <div class="panel">
+        <div class="panel-inner">
+          <span class="eyebrow">Shadow</span>
+          <h2 id="shadow-title">What’s one thing you never want people to notice about you?</h2>
+          <p class="helper-text">
+            Use one word. It stays in memory only for this experience, then returns to you in a different shape.
+          </p>
+
+          <div class="shadow-layout">
+            <div>
+              <form class="shadow-form" id="shadowForm">
+                <input
+                  class="shadow-input"
+                  id="shadowInput"
+                  name="shadow"
+                  type="text"
+                  maxlength="20"
+                  autocomplete="off"
+                  placeholder="one word"
+                  aria-label="One thing you hide"
+                />
+                <button class="choice-button" type="submit">Let it be seen</button>
+                <div class="shadow-note">No backend. No upload. Just a temporary reflection.</div>
+              </form>
+
+              <div class="message-block hidden" id="shadowReveal"></div>
+            </div>
+
+            <aside class="mirror-card">
+              <div class="mirror-silhouette" aria-hidden="true"></div>
+              <div class="mirror-word" id="mirrorWord">hidden</div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="stage" id="stage-door" aria-labelledby="door-title">
+      <div class="panel">
+        <div class="panel-inner">
+          <span class="eyebrow">Threshold</span>
+          <h2 id="door-title">Choose a door.</h2>
+          <p class="helper-text" id="doorPrompt">
+            At first, it won’t feel like a real choice.
+          </p>
+
+          <div class="door-room">
+            <div class="door-grid">
+              <button class="door disabled locked" id="leftDoor" type="button" data-door="left" aria-disabled="true">
+                <span class="door-beam" aria-hidden="true"></span>
+                <span class="door-label">Left Door</span>
+              </button>
+
+              <button class="door beat" id="rightDoor" type="button" data-door="right">
+                <span class="door-beam" aria-hidden="true"></span>
+                <span class="door-label">Right Door</span>
+              </button>
+            </div>
+
+            <div class="door-stage-footer">
+              <div class="door-meta">
+                <div class="door-meta-label">Perception</div>
+                <div class="door-meta-copy" id="doorMetaCopy">
+                  The mind fills locked spaces with imagined consequences.
+                </div>
+              </div>
+
+              <div class="door-choices" aria-label="Door rounds">
+                <span class="choice-dot active" id="dotOne"></span>
+                <span class="choice-dot" id="dotTwo"></span>
+                <span>Round <span id="roundLabel">1</span> / 2</span>
+              </div>
+            </div>
+
+            <div class="message-block" id="doorMessage"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="stage" id="stage-final" aria-labelledby="final-title">
+      <div class="panel center-panel">
+        <div class="panel-inner">
+          <span class="eyebrow">Afterward</span>
+          <h2 id="final-title">The motion was always the point.</h2>
+
+          <div class="constellation" aria-hidden="true">
+            <span class="star s1"></span>
+            <span class="star s2"></span>
+            <span class="star s3"></span>
+            <span class="star s4"></span>
+            <span class="star s5"></span>
+          </div>
+
+          <div class="final-grid">
+            <div class="final-stack" id="finalStack">
+              <p class="cinematic-line">Some things are written.</p>
+              <p class="cinematic-line">Some things are chosen.</p>
+              <p class="cinematic-line">But you?</p>
+              <p class="cinematic-line">You keep moving.</p>
+            </div>
+
+            <div class="final-core" id="finalCore">
+              <p class="cinematic-line">Expect the unexpected.</p>
+              <p class="cinematic-line">Accept the unexpected.</p>
+              <p class="cinematic-line">Just start.</p>
+              <p class="cinematic-line">Don’t stay stuck.</p>
+            </div>
+          </div>
+
+          <div class="restart-wrap">
+            <button class="restart-button" id="restartButton" type="button">Begin again</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const themes = {
+      dawn: {
+        bg1: "#2d1220",
+        bg2: "#92400e",
+        bg3: "#160b14",
+        bg4: "#24100f",
+        accent: "#fbbf24",
+        accentStrong: "#fde68a",
+        accentSoft: "rgba(251, 191, 36, 0.22)",
+        accentFog: "rgba(251, 191, 36, 0.08)"
+      },
+      ocean: {
+        bg1: "#081120",
+        bg2: "#15356a",
+        bg3: "#040915",
+        bg4: "#07101d",
+        accent: "#76e4ff",
+        accentStrong: "#c6f5ff",
+        accentSoft: "rgba(118, 228, 255, 0.24)",
+        accentFog: "rgba(118, 228, 255, 0.1)"
+      },
+      violet: {
+        bg1: "#120d1f",
+        bg2: "#4c1d95",
+        bg3: "#0d0a16",
+        bg4: "#180d23",
+        accent: "#f472b6",
+        accentStrong: "#fbcfe8",
+        accentSoft: "rgba(244, 114, 182, 0.24)",
+        accentFog: "rgba(244, 114, 182, 0.1)"
+      }
+    };
+
+    const stageMeta = {
+      "stage-intro": { label: "Prelude", progress: 20 },
+      "stage-mindset": { label: "Mindset", progress: 40 },
+      "stage-shadow": { label: "Shadow", progress: 60 },
+      "stage-door": { label: "Threshold", progress: 80 },
+      "stage-final": { label: "Afterward", progress: 100 }
+    };
+
+    const state = {
+      currentStage: "stage-intro",
+      theme: "ocean",
+      shadowWord: "",
+      doorRound: 1,
+      transitioning: false,
+      selectedThemeButton: null
+    };
+
+    const stageIds = [
+      "stage-intro",
+      "stage-mindset",
+      "stage-shadow",
+      "stage-door",
+      "stage-final"
+    ];
+
+    const root = document.documentElement;
+    const themeGrid = document.getElementById("themeGrid");
+    const mindsetNo = document.getElementById("mindsetNo");
+    const expectLine = document.getElementById("expectLine");
+    const acceptLine = document.getElementById("acceptLine");
+    const shadowForm = document.getElementById("shadowForm");
+    const shadowInput = document.getElementById("shadowInput");
+    const shadowReveal = document.getElementById("shadowReveal");
+    const mirrorWord = document.getElementById("mirrorWord");
+    const leftDoor = document.getElementById("leftDoor");
+    const rightDoor = document.getElementById("rightDoor");
+    const doorPrompt = document.getElementById("doorPrompt");
+    const doorMessage = document.getElementById("doorMessage");
+    const doorMetaCopy = document.getElementById("doorMetaCopy");
+    const roundLabel = document.getElementById("roundLabel");
+    const dotOne = document.getElementById("dotOne");
+    const dotTwo = document.getElementById("dotTwo");
+    const finalStack = document.getElementById("finalStack");
+    const finalCore = document.getElementById("finalCore");
+    const restartButton = document.getElementById("restartButton");
+    const particleLayer = document.getElementById("particleLayer");
+    const progressFill = document.getElementById("progressFill");
+    const hudLabel = document.getElementById("hudLabel");
+
+    function wait(ms) {
+      return new Promise((resolve) => window.setTimeout(resolve, ms));
+    }
+
+    function applyTheme(themeName) {
+      const theme = themes[themeName] || themes.ocean;
+      state.theme = themeName;
+      root.style.setProperty("--bg-1", theme.bg1);
+      root.style.setProperty("--bg-2", theme.bg2);
+      root.style.setProperty("--bg-3", theme.bg3);
+      root.style.setProperty("--bg-4", theme.bg4);
+      root.style.setProperty("--accent", theme.accent);
+      root.style.setProperty("--accent-strong", theme.accentStrong);
+      root.style.setProperty("--accent-soft", theme.accentSoft);
+      root.style.setProperty("--accent-fog", theme.accentFog);
+    }
+
+    function updateHud(stageId) {
+      const meta = stageMeta[stageId];
+      if (!meta) {
+        return;
+      }
+
+      progressFill.style.width = `${meta.progress}%`;
+      hudLabel.textContent = meta.label;
+    }
+
+    async function goToStage(nextId) {
+      if (state.transitioning || nextId === state.currentStage) {
+        return;
+      }
+
+      state.transitioning = true;
+      const current = document.getElementById(state.currentStage);
+      const next = document.getElementById(nextId);
+
+      if (current) {
+        current.classList.remove("active");
+      }
+
+      await wait(460);
+
+      next.classList.add("active");
+      state.currentStage = nextId;
+      updateHud(nextId);
+      state.transitioning = false;
+    }
+
+    async function revealLines(lines, gap = 900) {
+      for (const line of lines) {
+        line.classList.remove("visible");
+        void line.offsetWidth;
+        line.classList.add("visible");
+        await wait(gap);
+      }
+    }
+
+    function showDoorMessage(lines) {
+      doorMessage.innerHTML = "";
+      lines.forEach((text, index) => {
+        const line = document.createElement("p");
+        line.className = "message-line";
+        line.textContent = text;
+        doorMessage.appendChild(line);
+        window.setTimeout(() => line.classList.add("visible"), 140 + index * 760);
+      });
+    }
+
+    function showShadowReveal() {
+      shadowReveal.classList.remove("hidden");
+      shadowReveal.innerHTML = "";
+
+      const line1 = document.createElement("p");
+      line1.className = "message-line";
+      line1.innerHTML = `You feared your <span class="quote-word">'${state.shadowWord}'</span>. But you kept moving.`;
+
+      const line2 = document.createElement("p");
+      line2.className = "message-line";
+      line2.textContent = "The part you hid never stopped the next step.";
+
+      shadowReveal.append(line1, line2);
+      window.setTimeout(() => line1.classList.add("visible"), 120);
+      window.setTimeout(() => line2.classList.add("visible"), 860);
+
+      mirrorWord.textContent = state.shadowWord;
+      mirrorWord.classList.remove("visible");
+      void mirrorWord.offsetWidth;
+      window.setTimeout(() => mirrorWord.classList.add("visible"), 240);
+    }
+
+    function resetDoorState() {
+      state.doorRound = 1;
+      [leftDoor, rightDoor].forEach((door) => {
+        door.classList.remove("opening");
+        door.disabled = false;
+      });
+
+      leftDoor.classList.add("disabled", "locked");
+      leftDoor.setAttribute("aria-disabled", "true");
+      rightDoor.classList.remove("disabled", "locked");
+      rightDoor.removeAttribute("aria-disabled");
+      rightDoor.classList.add("beat");
+
+      doorPrompt.textContent = "At first, it won’t feel like a real choice.";
+      doorMetaCopy.textContent = "The mind fills locked spaces with imagined consequences.";
+      roundLabel.textContent = "1";
+      dotOne.classList.add("active");
+      dotTwo.classList.remove("active");
+      doorMessage.innerHTML = "";
+    }
+
+    async function handleFirstDoorChoice() {
+      rightDoor.classList.remove("beat");
+      rightDoor.classList.add("opening");
+      showDoorMessage(["Some paths choose you."]);
+      doorMetaCopy.textContent = "Restriction can feel personal, even when it is only temporary.";
+      await wait(2200);
+
+      [leftDoor, rightDoor].forEach((door) => {
+        door.classList.remove("opening", "disabled", "locked");
+        door.removeAttribute("aria-disabled");
+      });
+
+      leftDoor.classList.add("beat");
+      rightDoor.classList.add("beat");
+      state.doorRound = 2;
+      roundLabel.textContent = "2";
+      dotTwo.classList.add("active");
+      doorPrompt.textContent = "Now choose again. This time, whichever one you want.";
+      doorMetaCopy.textContent = "When both paths open, fear often stays behind anyway. That part was yours.";
+      doorMessage.innerHTML = "";
+    }
+
+    async function handleSecondDoorChoice(chosenDoor) {
+      leftDoor.classList.remove("beat");
+      rightDoor.classList.remove("beat");
+      chosenDoor.classList.add("opening");
+      doorMetaCopy.textContent = "The imagined catastrophe loses power when you walk toward it.";
+      showDoorMessage([
+        "Nothing bad was ever behind this door.",
+        "Only the story you created in your head."
+      ]);
+
+      await wait(3200);
+      await goToStage("stage-final");
+      await wait(500);
+      await revealLines(Array.from(finalStack.children), 920);
+      await wait(700);
+      await revealLines(Array.from(finalCore.children), 760);
+    }
+
+    function createParticles() {
+      const total = 24;
+      particleLayer.innerHTML = "";
+
+      for (let i = 0; i < total; i += 1) {
+        const particle = document.createElement("span");
+        particle.className = "particle";
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.animationDuration = `${16 + Math.random() * 18}s`;
+        particle.style.animationDelay = `${Math.random() * -18}s`;
+        particle.style.setProperty("--drift", `${-52 + Math.random() * 104}px`);
+        const size = 2 + Math.random() * 5;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.opacity = `${0.14 + Math.random() * 0.32}`;
+        particleLayer.appendChild(particle);
+      }
+    }
+
+    function sanitizeShadowWord(value) {
+      return value
+        .trim()
+        .replace(/\s+/g, " ")
+        .split(" ")[0]
+        .replace(/[^a-zA-Z'-]/g, "")
+        .slice(0, 20);
+    }
+
+    function resetExperience() {
+      state.shadowWord = "";
+      state.transitioning = false;
+      mindsetNo.disabled = false;
+
+      stageIds.forEach((id) => {
+        document.getElementById(id).classList.remove("active");
+      });
+
+      document.getElementById("stage-intro").classList.add("active");
+      state.currentStage = "stage-intro";
+      updateHud("stage-intro");
+
+      [expectLine, acceptLine, ...finalStack.children, ...finalCore.children].forEach((line) => {
+        line.classList.remove("visible");
+      });
+
+      shadowInput.value = "";
+      shadowReveal.classList.add("hidden");
+      shadowReveal.innerHTML = "";
+      mirrorWord.textContent = "hidden";
+      mirrorWord.classList.remove("visible");
+      resetDoorState();
+    }
+
+    themeGrid.addEventListener("click", async (event) => {
+      const button = event.target.closest("[data-theme]");
+      if (!button) {
+        return;
+      }
+
+      if (state.selectedThemeButton) {
+        state.selectedThemeButton.classList.remove("selected");
+      }
+
+      state.selectedThemeButton = button;
+      state.selectedThemeButton.classList.add("selected");
+      applyTheme(button.dataset.theme);
+
+      await wait(380);
+      await goToStage("stage-mindset");
+    });
+
+    mindsetNo.addEventListener("click", async () => {
+      mindsetNo.disabled = true;
+      await revealLines([expectLine], 1200);
+      await wait(460);
+      await revealLines([acceptLine], 980);
+      await wait(1300);
+      await goToStage("stage-shadow");
+      shadowInput.focus();
+    });
+
+    shadowForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const sanitized = sanitizeShadowWord(shadowInput.value);
+
+      if (!sanitized) {
+        shadowInput.focus();
+        return;
+      }
+
+      state.shadowWord = sanitized;
+      showShadowReveal();
+      await wait(2800);
+      await goToStage("stage-door");
+    });
+
+    [leftDoor, rightDoor].forEach((door) => {
+      door.addEventListener("click", async () => {
+        if (state.transitioning || door.classList.contains("disabled")) {
+          return;
+        }
+
+        if (state.doorRound === 1) {
+          if (door !== rightDoor) {
+            return;
+          }
+
+          await handleFirstDoorChoice();
+          return;
+        }
+
+        leftDoor.disabled = true;
+        rightDoor.disabled = true;
+        await handleSecondDoorChoice(door);
+      });
+    });
+
+    restartButton.addEventListener("click", () => {
+      resetExperience();
+    });
+
+    applyTheme(state.theme);
+    createParticles();
+    resetDoorState();
+    updateHud("stage-intro");
+  </script>
+</body>
+</html>
