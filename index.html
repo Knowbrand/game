@@ -1,53 +1,60 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Level 1</title>
 
 <style>
-body {
+* {
   margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
   font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #f5f1ea, #ffffff);
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  background: linear-gradient(135deg, #f5f1ea, #ffffff);
 }
 
-/* Main Game Card */
+/* Game Card */
 .game-card {
   width: 90%;
   max-width: 750px;
-  background: white;
+  background: #ffffff;
   padding: 60px 40px;
-  border-radius: 25px;
-  box-shadow: 0 25px 60px rgba(0,0,0,0.08);
+  border-radius: 30px;
   border: 2px solid #6f8f72;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.08);
   text-align: center;
   position: relative;
+  animation: fadeIn 1s ease forwards;
 }
 
-/* Level Circle */
+/* Level Badge */
 .level-number {
   position: absolute;
-  top: -20px;
-  left: 30px;
+  top: -22px;
+  left: 35px;
+  width: 50px;
+  height: 50px;
   background: #6f8f72;
   color: white;
-  width: 45px;
-  height: 45px;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
   font-weight: bold;
+  font-size: 18px;
 }
 
 /* Question */
 .question {
-  font-size: 26px;
+  font-size: 28px;
   margin-bottom: 50px;
   color: #2e2e2e;
 }
@@ -75,24 +82,36 @@ body {
   transform: translateY(-4px);
 }
 
-/* Wrong selection */
+/* States */
 .wrong {
   background: #f8d7da !important;
   border-color: #d9534f !important;
   color: #721c24 !important;
 }
 
-/* Correct selection */
 .correct {
   background: #6f8f72 !important;
   color: white !important;
 }
 
 .feedback {
-  margin-top: 30px;
+  margin-top: 35px;
   font-size: 15px;
   color: #777;
   min-height: 20px;
+  transition: opacity 0.3s ease;
+}
+
+/* Fade Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>
 </head>
@@ -120,26 +139,40 @@ body {
 function checkAnswer(button, isCorrect) {
 
   const buttons = document.querySelectorAll('.option');
+  const feedback = document.getElementById("feedback");
+
+  // Disable all buttons
   buttons.forEach(btn => btn.disabled = true);
 
   if (isCorrect) {
+
     button.classList.add('correct');
-    document.getElementById("feedback").innerText = "Access Granted.";
+    feedback.innerText = "Access Granted.";
+
+    // Store selection
+    sessionStorage.setItem("nameSelected", "AK");
+
+    // Smooth transition
+    setTimeout(() => {
+      document.body.style.opacity = "0";
+      document.body.style.transition = "opacity 0.6s ease";
+    }, 800);
 
     setTimeout(() => {
       window.location.href = "level2.html";
-    }, 1200);
+    }, 1400);
 
   } else {
+
     button.classList.add('wrong');
-    document.getElementById("feedback").innerText = "That doesn't feel right...";
+    feedback.innerText = "That doesn't feel right...";
 
     setTimeout(() => {
       buttons.forEach(btn => {
         btn.disabled = false;
         btn.classList.remove('wrong');
       });
-      document.getElementById("feedback").innerText = "";
+      feedback.innerText = "";
     }, 1200);
   }
 }
