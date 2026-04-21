@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,119 +7,75 @@
 
 <style>
 body {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background: #000;
-  overflow: hidden;
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f6f1e9; /* soft beige */
+    font-family: 'Poppins', sans-serif;
+    overflow: hidden;
 }
 
-/* Intro Screen */
-.intro {
-  position: fixed;
-  inset: 0;
-  background: black;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  font-size: 28px;
-  letter-spacing: 2px;
-  animation: fadeOut 4s forwards;
+.container {
+    text-align: center;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 1.5s ease forwards;
 }
 
-.intro span {
-  opacity: 0;
-  animation: textFade 2s forwards 1s;
+.line {
+    font-size: 2rem;
+    color: #1f4d3a; /* deep green */
+    margin-bottom: 20px;
 }
 
-@keyframes textFade {
-  to { opacity: 1; }
+.subline {
+    font-size: 1.2rem;
+    color: #355f4b;
+    margin-bottom: 40px;
+    line-height: 1.6;
 }
 
-@keyframes fadeOut {
-  0% { opacity: 1; }
-  80% { opacity: 1; }
-  100% { opacity: 0; visibility: hidden; }
+button {
+    padding: 12px 30px;
+    border: 2px solid #1f4d3a;
+    background: transparent;
+    color: #1f4d3a;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 30px;
+    transition: 0.3s ease;
 }
 
-/* Main Game Content */
-.game-content {
-  display: none;
-  height: 100vh;
-  background: linear-gradient(135deg, #f5f1ea, #ffffff);
-  justify-content: center;
-  align-items: center;
+button:hover {
+    background: #1f4d3a;
+    color: #fff;
 }
 
-.game-card {
-  width: 90%;
-  max-width: 700px;
-  background: white;
-  padding: 60px 40px;
-  border-radius: 25px;
-  box-shadow: 0 25px 60px rgba(0,0,0,0.08);
-  border: 2px solid #6f8f72;
-  text-align: center;
-}
-
-.question {
-  font-size: 26px;
-  margin-bottom: 40px;
-  color: #2e2e2e;
-}
-
-.option {
-  display: block;
-  width: 100%;
-  margin: 15px 0;
-  padding: 18px;
-  border-radius: 15px;
-  border: 2px solid #6f8f72;
-  background: transparent;
-  font-size: 16px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.option:hover {
-  background: #6f8f72;
-  color: white;
+@keyframes fadeUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 </style>
 </head>
 
 <body>
 
-<!-- Cinematic Intro -->
-<div class="intro">
-  <span>LEVEL 2</span>
-</div>
-
-<!-- Game Content -->
-<div class="game-content" id="game">
-  <div class="game-card">
-    <div class="question">
-      Do you control everything in life?
+<div class="container">
+    <div class="line">Exactly.</div>
+    <div class="subline">
+        Some doors choose you.<br>
+        Not the other way around.
     </div>
-
-    <button class="option" onclick="wrong()">Yes</button>
-    <button class="option" onclick="nextLevel()">No</button>
-  </div>
+    <button onclick="goNext()">Next →</button>
 </div>
 
 <script>
-setTimeout(() => {
-  document.querySelector('.intro').style.display = "none";
-  document.getElementById('game').style.display = "flex";
-  document.body.style.background = "#f5f1ea";
-}, 4000);
-
-function wrong() {
-  alert("Think again.");
-}
-
-function nextLevel() {
-  window.location.href = "level3.html";
+function goNext() {
+    window.location.href = "level3.html";
 }
 </script>
 
