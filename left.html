@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Left Door</title>
+
+<style>
+body{
+  margin:0;
+  font-family:'Segoe UI',sans-serif;
+  background: radial-gradient(circle at center, #1a1a1a 0%, #0e0e0e 70%);
+  color:white;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+}
+
+.card{
+  max-width:700px;
+  padding:60px 40px;
+  border:2px solid #6f8f72;
+  border-radius:20px;
+  background:rgba(20,20,20,0.9);
+  box-shadow:0 25px 60px rgba(0,0,0,0.7);
+  animation:fadeIn 1.2s ease forwards;
+}
+
+h1{
+  font-size:28px;
+  margin-bottom:30px;
+}
+
+p{
+  font-size:18px;
+  line-height:1.6;
+  opacity:0.9;
+}
+
+button{
+  margin-top:40px;
+  padding:14px 28px;
+  border-radius:30px;
+  border:none;
+  background:#6f8f72;
+  color:white;
+  font-size:15px;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+button:hover{
+  background:#5e7a62;
+  transform:translateY(-3px);
+}
+
+@keyframes fadeIn{
+  from{opacity:0; transform:translateY(20px);}
+  to{opacity:1; transform:translateY(0);}
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <h1>Risk Accepted.</h1>
+
+  <p>
+    You were ready to lose it all.<br><br>
+
+    For something better.<br><br>
+
+    But listen carefully…
+  </p>
+
+  <p style="margin-top:25px; font-weight:600;">
+    Dumboo, you are nothing.<br>
+    Nothing bad can or will ever happen to you.<br>
+    Go choose the right door.
+  </p>
+
+  <button onclick="window.location.href='doors.html'">
+    Go Back
+  </button>
+</div>
+
+</body>
+</html>
