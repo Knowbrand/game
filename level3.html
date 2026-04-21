@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Level 3</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #f5f1ea, #ffffff);
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.story-card {
+  width: 90%;
+  max-width: 800px;
+  background: white;
+  padding: 60px 50px;
+  border-radius: 30px;
+  border: 2px solid #6f8f72;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.08);
+  position: relative;
+}
+
+.level-number {
+  position: absolute;
+  top: -22px;
+  left: 35px;
+  width: 50px;
+  height: 50px;
+  background: #6f8f72;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+}
+
+.story-text {
+  font-size: 20px;
+  line-height: 1.8;
+  color: #2e2e2e;
+  min-height: 200px;
+  white-space: pre-line;
+}
+
+.cursor {
+  display: inline-block;
+  width: 2px;
+  background: #6f8f72;
+  animation: blink 1s infinite;
+  margin-left: 4px;
+}
+
+@keyframes blink {
+  0%, 50%, 100% { opacity: 1; }
+  25%, 75% { opacity: 0; }
+}
+
+.continue-btn {
+  margin-top: 40px;
+  padding: 14px 30px;
+  border-radius: 30px;
+  border: 2px solid #6f8f72;
+  background: transparent;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: none;
+}
+
+.continue-btn:hover {
+  background: #6f8f72;
+  color: white;
+  transform: translateY(-3px);
+}
+</style>
+</head>
+
+<body>
+
+<div class="story-card">
+  <div class="level-number">3</div>
+  <div class="story-text" id="story"></div>
+  <button class="continue-btn" id="continueBtn" onclick="goNext()">Continue →</button>
+</div>
+
+<script>
+
+// Protection: must come from Level 2
+if (sessionStorage.getItem("nameSelected") !== "AK") {
+  window.location.href = "level1.html";
+}
+
+const storyContent = `It always started with hesitation.
+
+Not because you were weak.
+But because you cared.
+
+You think deeply.
+You feel intensely.
+You question yourself more than you question the world.
+
+And maybe...
+you never wanted people to see that side.
+
+But here’s the truth.
+
+Hesitation isn’t weakness.
+It’s awareness.
+
+And awareness becomes strength
+the moment you decide to move anyway.
+
+This isn’t the end of your story.
+
+It’s just the part
+where you stop doubting
+and start walking forward.
+
+The future doesn’t wait.
+It unfolds.
+
+And you’re already ready for it.`;
+
+const storyElement = document.getElementById("story");
+const continueBtn = document.getElementById("continueBtn");
+
+let index = 0;
+let speed = 28; // typing speed
+
+function typeWriter() {
+  if (index < storyContent.length) {
+    storyElement.innerHTML += storyContent.charAt(index);
+    index++;
+    setTimeout(typeWriter, speed);
+  } else {
+    continueBtn.style.display = "inline-block";
+  }
+}
+
+typeWriter();
+
+function goNext() {
+  window.location.href = "level4.html";
+}
+
+</script>
+
+</body>
+</html>
