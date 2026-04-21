@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Right Door</title>
+
+<style>
+body{
+  margin:0;
+  font-family:'Segoe UI',sans-serif;
+  background: linear-gradient(135deg,#f5f1ea,#ffffff);
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+}
+
+.card{
+  max-width:700px;
+  padding:60px 40px;
+  border:2px solid #6f8f72;
+  border-radius:20px;
+  background:white;
+  box-shadow:0 25px 60px rgba(0,0,0,0.1);
+  animation:fadeIn 1.2s ease forwards;
+}
+
+h1{
+  font-size:30px;
+  margin-bottom:30px;
+  color:#2e2e2e;
+}
+
+p{
+  font-size:18px;
+  line-height:1.7;
+  color:#444;
+}
+
+button{
+  margin-top:40px;
+  padding:14px 28px;
+  border-radius:30px;
+  border:none;
+  background:#6f8f72;
+  color:white;
+  font-size:15px;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+button:hover{
+  background:#5e7a62;
+  transform:translateY(-3px);
+}
+
+@keyframes fadeIn{
+  from{opacity:0; transform:translateY(20px);}
+  to{opacity:1; transform:translateY(0);}
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <h1>You chose stability.</h1>
+
+  <p>
+    A life you're already managing.<br><br>
+
+    Not perfect.<br>
+    Not dramatic.<br><br>
+
+    But peaceful.<br><br>
+
+    And sometimes…<br>
+    peace is the greatest victory.
+  </p>
+
+  <button onclick="window.location.href='final.html'">
+    Continue
+  </button>
+</div>
+
+</body>
+</html>
