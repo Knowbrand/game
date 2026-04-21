@@ -4,104 +4,176 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Level 3</title>
-
 <style>
+:root {
+  --bg-1: #f5f1ea;
+  --bg-2: #ebe3d6;
+  --card: #fffdf8;
+  --card-border: #d7c8b2;
+  --text: #2f2521;
+  --muted: #7d6b61;
+  --accent: #7c6758;
+  --accent-dark: #5f4d41;
+  --shadow: 0 22px 55px rgba(83, 63, 49, 0.12);
+}
+
 * {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
 
 body {
-  font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #f5f1ea, #ffffff);
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
-  justify-content: center;
   align-items: center;
-  overflow: hidden;
+  justify-content: center;
+  padding: 24px;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  color: var(--text);
+  background: linear-gradient(135deg, var(--bg-1), var(--bg-2));
 }
 
-.story-card {
-  width: 90%;
-  max-width: 800px;
-  background: white;
-  padding: 60px 50px;
-  border-radius: 30px;
-  border: 2px solid #6f8f72;
-  box-shadow: 0 30px 60px rgba(0,0,0,0.08);
-  position: relative;
+.card {
+  width: 100%;
+  max-width: 760px;
+  padding: 32px;
+  border-radius: 28px;
+  border: 1px solid var(--card-border);
+  background: var(--card);
+  box-shadow: var(--shadow);
 }
 
-.level-number {
-  position: absolute;
-  top: -22px;
-  left: 35px;
-  width: 50px;
-  height: 50px;
-  background: #6f8f72;
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-weight: bold;
+.level-tag {
+  display: inline-block;
+  margin-bottom: 22px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: #f3ece4;
+  color: var(--accent-dark);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin-bottom: 14px;
+  font-size: clamp(1.9rem, 4vw, 2.8rem);
+  line-height: 1.1;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.intro {
+  margin-bottom: 24px;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.story-box {
+  min-height: 290px;
+  padding: 24px;
+  border: 1px solid #e5d9ca;
+  border-radius: 22px;
+  background: #fffaf4;
 }
 
 .story-text {
-  font-size: 20px;
-  line-height: 1.8;
-  color: #2e2e2e;
-  min-height: 200px;
+  font-size: 18px;
+  line-height: 1.9;
+  color: var(--text);
   white-space: pre-line;
 }
 
 .cursor {
   display: inline-block;
   width: 2px;
-  background: #6f8f72;
-  animation: blink 1s infinite;
+  height: 1.1em;
   margin-left: 4px;
+  background: var(--accent);
+  vertical-align: bottom;
+  animation: blink 1s infinite;
 }
 
-@keyframes blink {
-  0%, 50%, 100% { opacity: 1; }
-  25%, 75% { opacity: 0; }
+.actions {
+  margin-top: 24px;
+  text-align: center;
 }
 
 .continue-btn {
-  margin-top: 40px;
-  padding: 14px 30px;
-  border-radius: 30px;
-  border: 2px solid #6f8f72;
-  background: transparent;
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.3s ease;
   display: none;
+  padding: 14px 28px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--accent);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
 }
 
 .continue-btn:hover {
-  background: #6f8f72;
-  color: white;
-  transform: translateY(-3px);
+  transform: translateY(-2px);
+  background: var(--accent);
+  color: #fff;
+}
+
+@keyframes blink {
+  0%,
+  50%,
+  100% {
+    opacity: 1;
+  }
+
+  25%,
+  75% {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .card {
+    padding: 24px 18px;
+    border-radius: 22px;
+  }
+
+  .story-box {
+    min-height: 340px;
+    padding: 18px;
+  }
+
+  .story-text {
+    font-size: 17px;
+  }
+
+  .continue-btn {
+    width: 100%;
+  }
 }
 </style>
 </head>
-
 <body>
+  <main class="card">
+    <div class="level-tag">Level 3</div>
+    <h1 class="title">Read this slowly.</h1>
+    <p class="intro">
+      This part is not a challenge. It is a reminder.
+    </p>
 
-<div class="story-card">
-  <div class="level-number">3</div>
-  <div class="story-text" id="story"></div>
-  <button class="continue-btn" id="continueBtn" onclick="goNext()">Continue →</button>
-</div>
+    <div class="story-box">
+      <div class="story-text" id="story"></div>
+    </div>
+
+    <div class="actions">
+      <button class="continue-btn" id="continueBtn" onclick="goNext()">Continue</button>
+    </div>
+  </main>
 
 <script>
-
-// Protection: must come from Level 2
 if (sessionStorage.getItem("nameSelected") !== "AK") {
-  window.location.href = "level1.html";
+  window.location.href = "index.html";
 }
 
 const storyContent = `It always started with hesitation.
@@ -116,48 +188,62 @@ You question yourself more than you question the world.
 And maybe...
 you never wanted people to see that side.
 
-But here’s the truth.
+But here is the truth.
 
-Hesitation isn’t weakness.
-It’s awareness.
+Hesitation is not weakness.
+It is awareness.
 
 And awareness becomes strength
 the moment you decide to move anyway.
 
-This isn’t the end of your story.
+This is not the end of your story.
 
-It’s just the part
+It is just the part
 where you stop doubting
 and start walking forward.
 
-The future doesn’t wait.
+The future does not wait.
 It unfolds.
 
-And you’re already ready for it.`;
+And you are already ready for it.`;
 
 const storyElement = document.getElementById("story");
 const continueBtn = document.getElementById("continueBtn");
 
 let index = 0;
-let speed = 28; // typing speed
+const speed = 28;
+
+function renderStory() {
+  const visibleText = storyContent.slice(0, index);
+  const isFinished = index >= storyContent.length;
+  storyElement.innerHTML = isFinished
+    ? visibleText
+    : `${visibleText}<span class="cursor"></span>`;
+}
 
 function typeWriter() {
-  if (index < storyContent.length) {
-    storyElement.innerHTML += storyContent.charAt(index);
-    index++;
-    setTimeout(typeWriter, speed);
-  } else {
-    continueBtn.style.display = "inline-block";
+  if (index <= storyContent.length) {
+    renderStory();
+    index += 1;
+
+    if (index <= storyContent.length) {
+      setTimeout(typeWriter, speed);
+    } else {
+      continueBtn.style.display = "inline-block";
+    }
   }
 }
 
 typeWriter();
 
 function goNext() {
-  window.location.href = "instructions.html";
+  document.body.style.opacity = "0";
+  document.body.style.transition = "opacity 0.5s ease";
+
+  setTimeout(() => {
+    window.location.href = "instructions.html";
+  }, 550);
 }
-
 </script>
-
 </body>
 </html>
