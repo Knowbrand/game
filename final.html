@@ -1,44 +1,130 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The End</title>
-
 <style>
-body{
-  margin:0;
-  font-family:'Segoe UI',sans-serif;
-  background:#111;
-  color:white;
-  height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  text-align:center;
+:root {
+  --bg-1: #f7f1e7;
+  --bg-2: #efe4d8;
+  --card: #fffdf9;
+  --card-border: #dccfc2;
+  --text: #2f2523;
+  --muted: #72625d;
+  --accent: #7f6a64;
+  --accent-soft: #f3ebe6;
+  --shadow: 0 24px 60px rgba(84, 62, 49, 0.12);
 }
 
-h1{
-  font-size:34px;
-  letter-spacing:1px;
-  animation:fadeIn 2s ease forwards;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-@keyframes fadeIn{
-  from{opacity:0;}
-  to{opacity:1;}
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  color: var(--text);
+  background: linear-gradient(135deg, var(--bg-1), var(--bg-2));
+}
+
+.card {
+  width: 100%;
+  max-width: 780px;
+  padding: 36px;
+  border: 1px solid var(--card-border);
+  border-radius: 28px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+}
+
+.tag {
+  display: inline-block;
+  margin-bottom: 20px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin-bottom: 16px;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.1;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.intro {
+  margin-bottom: 24px;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.letter {
+  padding: 24px;
+  border: 1px solid #e8ddd3;
+  border-radius: 22px;
+  background: #fffaf4;
+  color: var(--text);
+  font-size: 17px;
+  line-height: 1.9;
+  white-space: pre-line;
+}
+
+.closing {
+  margin-top: 22px;
+  color: var(--muted);
+  font-size: 14px;
+  text-align: center;
+}
+
+@media (max-width: 640px) {
+  .card {
+    padding: 24px 18px;
+    border-radius: 22px;
+  }
+
+  .letter {
+    padding: 18px;
+    font-size: 16px;
+  }
 }
 </style>
 </head>
-
 <body>
+  <main class="card">
+    <div class="tag">The End</div>
+    <h1>A small letter for you.</h1>
+    <p class="intro">
+      Expect the unexpected. Accept the unexpected. Just start. Do not stay stuck.
+    </p>
 
-<h1>
-Expect the unexpected.<br>
-Accept the unexpected.<br><br>
-Just start.<br>
-Don't stay stuck.
-</h1>
+    <div class="letter">Dear pagal person of my life,
 
+I know this is not much. Next time I'll make proper graphics and all, but yeah, this is for you.
+
+I mean, I just wanted to say: don't stress out.
+
+You've got it.
+You'll be fine.
+
+So be happy, because there's nothing you should be but happy.
+
+Regards,
+some dazed dumboo guy</div>
+
+    <div class="closing">Made with effort, chaos, and very serious dumboo energy.</div>
+  </main>
 </body>
-</html> 
+</html>
