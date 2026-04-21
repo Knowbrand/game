@@ -9,36 +9,44 @@
 body {
     margin: 0;
     height: 100vh;
+    background: #f6f1e9;
+    font-family: 'Poppins', sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #f6f1e9; /* soft beige */
-    font-family: 'Poppins', sans-serif;
     overflow: hidden;
 }
 
 .container {
     text-align: center;
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeUp 1.5s ease forwards;
+    width: 90%;
+    max-width: 600px;
 }
 
-.line {
-    font-size: 2rem;
-    color: #1f4d3a; /* deep green */
-    margin-bottom: 20px;
-}
-
-.subline {
+/* Loading */
+.loading {
     font-size: 1.2rem;
-    color: #355f4b;
+    color: #1f4d3a;
+    letter-spacing: 2px;
+    animation: pulse 1.5s infinite;
+}
+
+/* Question Section */
+.question-section {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+}
+
+.question {
+    font-size: 1.8rem;
+    color: #1f4d3a;
     margin-bottom: 40px;
-    line-height: 1.6;
 }
 
 button {
     padding: 12px 30px;
+    margin: 10px;
     border: 2px solid #1f4d3a;
     background: transparent;
     color: #1f4d3a;
@@ -50,14 +58,34 @@ button {
 
 button:hover {
     background: #1f4d3a;
-    color: #fff;
+    color: white;
 }
 
-@keyframes fadeUp {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+/* Exactly Section */
+.exactly-section {
+    display: none;
+    opacity: 0;
+    transition: opacity 1s ease;
+}
+
+.line {
+    font-size: 2rem;
+    color: #1f4d3a;
+    margin-bottom: 20px;
+}
+
+.subline {
+    font-size: 1.2rem;
+    color: #355f4b;
+    margin-bottom: 40px;
+    line-height: 1.6;
+}
+
+/* Animations */
+@keyframes pulse {
+    0% { opacity: 0.3; }
+    50% { opacity: 1; }
+    100% { opacity: 0.3; }
 }
 </style>
 </head>
@@ -65,18 +93,72 @@ button:hover {
 <body>
 
 <div class="container">
-    <div class="line">Exactly.</div>
-    <div class="subline">
-        Some doors choose you.<br>
-        Not the other way around.
+
+    <!-- Loading -->
+    <div class="loading" id="loading">
+        Loading next chapter...
     </div>
-    <button onclick="goNext()">Next →</button>
+
+    <!-- Question -->
+    <div class="question-section" id="questionSection">
+        <div class="question">
+            Do you control everything in life?
+        </div>
+        <button onclick="yesClicked()">Yes</button>
+        <button onclick="noClicked()">No</button>
+    </div>
+
+    <!-- Exactly -->
+    <div class="exactly-section" id="exactlySection">
+        <div class="line">Exactly.</div>
+        <div class="subline">
+            Some doors choose you.<br>
+            Not the other way around.
+        </div>
+        <button onclick="goNext()">Next →</button>
+    </div>
+
 </div>
 
 <script>
+
+// Small protection: must come from Level 1
+if (sessionStorage.getItem("nameSelected") !== "AK") {
+    window.location.href = "level1.html";
+}
+
+// Show question after loading
+setTimeout(() => {
+    document.getElementById("loading").style.display = "none";
+    const q = document.getElementById("questionSection");
+    q.style.display = "block";
+    setTimeout(() => {
+        q.style.opacity = "1";
+    }, 50);
+}, 2000);
+
+function yesClicked() {
+    alert("Think again.");
+}
+
+function noClicked() {
+    const q = document.getElementById("questionSection");
+    q.style.opacity = "0";
+
+    setTimeout(() => {
+        q.style.display = "none";
+        const ex = document.getElementById("exactlySection");
+        ex.style.display = "block";
+        setTimeout(() => {
+            ex.style.opacity = "1";
+        }, 50);
+    }, 600);
+}
+
 function goNext() {
     window.location.href = "level3.html";
 }
+
 </script>
 
 </body>
